@@ -1,10 +1,24 @@
 export interface UsersStore {
   users: Array<User>;
+  isGetUsersInProgress: boolean;
+  error: string | null | undefined;
 }
 
 export interface User {
-  id: string;
-  name: string;
+  name: {
+    title: string;
+    first: string;
+    last: string;
+  };
   email: string;
-  location: string;
+  picture: string;
+  location: {
+    street: {
+      number: number;
+      name: string;
+    };
+    city: string;
+    country: string;
+  };
+  id: string;
 }
