@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./App.css";
 import { fetchUsers } from "./store/thunks/users";
+import UsersTable from "./components/UsersTable/UsersTable";
 
 function App() {
   const dispatch = useDispatch();
@@ -20,7 +21,8 @@ function App() {
 
   return (
     <>
-      <h1>Users List app</h1>
+      <h1>Users List</h1>
+      <UsersTable users={users} />
     </>
   );
 }
