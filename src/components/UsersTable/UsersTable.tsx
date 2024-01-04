@@ -1,39 +1,91 @@
-/*
-This page will show all the users resolved from the requests with a proper design
-1. The design should be responsive. 
-2. Use material-ui.
-3. Each user can edit(locally). 
-4. The edit button should open a modal with save and cancel buttons. 
-5. The fields that can be edited are- Name, Email, and Location. 
-6. Proper validation should be included - use ‘yup’ for validation
-    * -  All Fields cannot be empty. 
-    * -  Name - min of 3 characters. 
-    * -  Email - should be a valid email address. 
-    * -  Each user should have a unique email address 
-    * -  If validation fails,  error message should be shown when trying to save a user - don’t use HTML5 validation. 
-7. Implement “Add user” button - This should open a new save user form modal.all fields should have ‘yup’ validations.form fields should be: Name - title, first name, last name. Email. User image-medium. Location-country, city, street.uuid - generated automatically. 
-8. Each user can be deleted (show confirm message before deleting). 
-9. Add a search filter by email, name, id, and location(client-side search).
-10. the users are passed from the parent component (App.tsx) to the child component (UsersTable.tsx) as a prop.
-11. use dateGrid to show the users.
- */
-
-import { FC } from "react";
+import { FC, useState } from "react";
+import * as yup from "yup";
+import { Box, Button } from "@mui/material";
+import {
+  DataGrid,
+  GridCellParams,
+  GridColDef,
+  GridValueGetterParams,
+} from "@mui/x-data-grid";
+import AddUserModal from "../Modals/AddUserModal/AddUserModal";
 import { User } from "../../utils/types";
-import { Box } from "@mui/material";
-import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
+import { useFormik } from "formik";
+import EditUserModal from "../Modals/EditUserModal/EditUserModal";
 
 interface UsersTableProps {
   users: User[];
 }
 
+const editUserValidationSchema = yup.object().shape({
+  title: yup.string().min(3).required(),
+  first: yup.string().min(3).required(),
+  last: yup.string().min(3).required(),
+  email: yup.string().email().required(),
+  location_country: yup.string().min(3).required(),
+  location_city: yup.string().min(3).required(),
+  location_street_name: yup.string().min(3).required(),
+  location_street_number: yup.number().min(1).required(),
+});
+
 const UsersTable: FC<UsersTableProps> = ({ users }) => {
+  const formik = useFormik({
+    initialValues: {
+      title: "",
+      first: "",
+      last: "",
+      email: "",
+      location_country: "",
+      location_city: "",
+      location_street_name: "",
+      location_street_number: "",
+    },
+    validationSchema: editUserValidationSchema,
+    onSubmit: (values) => {
+      alert(JSON.stringify(values, null, 2));
+      formik.resetForm();
+    },
+  });
+
+  // const [open, setOpen] = useState(false);
+
+  const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+  const [selectedField, setSelectedField] = useState("");
+  const [selectedValue, setSelectedValue] = useState("");
+
+  console.log("selectedField", selectedField);
+  console.log("selectedValue", selectedValue);
+
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 90 },
+    // { field: "id", headerName: "ID", width: 90 },
+    {
+      field: "title",
+      headerName: "Title",
+      width: 120,
+      editable: true,
+      valueGetter: (params: GridValueGetterParams) =>
+        params.row.name ? params.row.name.title : "",
+    },
+    {
+      field: "first",
+      headerName: "Name",
+      width: 120,
+      editable: true,
+      valueGetter: (params: GridValueGetterParams) =>
+        params.row.name ? params.row.name.first : "",
+    },
+    {
+      field: "last",
+      headerName: "Last Name",
+      width: 120,
+      editable: true,
+      valueGetter: (params: GridValueGetterParams) =>
+        params.row.name ? params.row.name.last : "",
+    },
     {
       field: "email",
       headerName: "Email",
-      width: 200,
+      width: 220,
       editable: true,
     },
     {
@@ -55,7 +107,7 @@ const UsersTable: FC<UsersTableProps> = ({ users }) => {
     {
       field: "location_street_name",
       headerName: "Street",
-      width: 200,
+      width: 120,
       editable: true,
       valueGetter: (params: GridValueGetterParams) =>
         params.row.location?.street ? params.row.location.street.name : "",
@@ -69,19 +121,30 @@ const UsersTable: FC<UsersTableProps> = ({ users }) => {
       valueGetter: (params: GridValueGetterParams) =>
         params.row.location?.street ? params.row.location.street.number : null,
     },
-    {
-      field: "fullName",
-      headerName: "Full name",
-      description: "This column has a value getter and is not sortable.",
-      sortable: false,
-      width: 160,
-      valueGetter: (params: GridValueGetterParams) =>
-        `${params.row.name?.first || ""} ${params.row.name?.last || ""}`,
-    },
   ];
+
+  const toggleEditUserModal = (params?: GridCellParams) => {
+    if (params) {
+      setSelectedField(params.field);
+      setSelectedValue(params.value as string);
+    }
+    setIsEditUserModalOpen((prev) => !prev);
+  };
+
+  const toggleAddUserModal = () => {
+    setIsAddUserModalOpen(!isAddUserModalOpen);
+  };
 
   return (
     <Box sx={{ height: 400, width: "100%" }}>
+      <Button
+        sx={{ mb: 2 }}
+        onClick={toggleAddUserModal}
+        variant="contained"
+        color="primary"
+      >
+        Add User
+      </Button>
       <DataGrid
         rows={users}
         columns={columns}
@@ -92,9 +155,19 @@ const UsersTable: FC<UsersTableProps> = ({ users }) => {
             },
           },
         }}
-        pageSizeOptions={[5]}
-        checkboxSelection
+        pageSizeOptions={[10]}
         disableRowSelectionOnClick
+        onCellClick={toggleEditUserModal}
+      />
+      <EditUserModal
+        open={isEditUserModalOpen}
+        handleClose={toggleEditUserModal}
+        selectedField={selectedField}
+        selectedValue={selectedValue}
+      />
+      <AddUserModal
+        open={isAddUserModalOpen}
+        handleClose={toggleAddUserModal}
       />
     </Box>
   );

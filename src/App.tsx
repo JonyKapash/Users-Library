@@ -10,10 +10,8 @@ function App() {
 
   useEffect(() => {
     const fetchAndLogUsers = async () => {
-      const response = await dispatch(fetchUsers());
+      const response = await dispatch(fetchUsers() as any);
       const { payload } = response;
-      console.log(payload);
-      console.log(users);
     };
 
     fetchAndLogUsers();
@@ -21,7 +19,7 @@ function App() {
 
   return (
     <>
-      <h1>Users List</h1>
+      <h1>Users Library</h1>
       <UsersTable users={users} />
     </>
   );
