@@ -1,11 +1,12 @@
 import { FC } from "react";
 import { useFormik } from "formik";
 import { v4 as uuidv4 } from "uuid";
+import * as yup from "yup";
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import { ButtonContainer, StyledBox } from "./AddUserModal.styles";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../../../store/slices/users";
-import { addUserValidationSchema } from "./schema";
+import { RootState } from "../../../store/store";
 
 interface AddUserModalProps {
   open: boolean;
@@ -13,6 +14,25 @@ interface AddUserModalProps {
 }
 
 const AddUserModal: FC<AddUserModalProps> = ({ open, handleClose }) => {
+  const users = useSelector((state: RootState) => state.users.users);
+
+  const addUserValidationSchema = yup.object().shape({
+    title: yup.string().min(3).required(),
+    first: yup.string().min(3).required(),
+    last: yup.string().min(3).required(),
+    email: yup
+      .string()
+      .email()
+      .required()
+      .test("unique", "This email already exists", (value) => {
+        return !users.some((user) => user.email === value);
+      }),
+    country: yup.string().min(3).required(),
+    city: yup.string().min(3).required(),
+    streetName: yup.string().min(3).required(),
+    streetNumber: yup.number().min(1).required(),
+  });
+
   const dispatch = useDispatch();
 
   const formik = useFormik({
