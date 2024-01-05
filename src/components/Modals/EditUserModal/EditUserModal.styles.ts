@@ -17,6 +17,10 @@ export const StyledBox = styled(Box)(({ theme }) => ({
   transform: "translate(-50%, -50%)",
   border: "2px solid #000",
   overflow: "auto",
+  '@media (max-width:600px)': {
+    width: '80%',
+    height: '80%',
+  },
 }));
 
 export const ButtonContainer = styled("div")({
@@ -25,4 +29,9 @@ export const ButtonContainer = styled("div")({
   alignSelf: "flex-end",
   width: "100%",
   marginTop: "20px",
+  '@media (max-width:600px)': {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: '10px',
+  },
 });
