@@ -6,6 +6,8 @@ import AddUserModal from "../Modals/AddUserModal/AddUserModal";
 import { User } from "../../utils/types";
 import { useFormik } from "formik";
 import EditUserModal from "../Modals/EditUserModal/EditUserModal";
+import { useDispatch } from "react-redux";
+import { deleteUser } from "../../store/slices/users";
 
 interface UsersTableProps {
   users: User[];
@@ -23,6 +25,8 @@ const editUserValidationSchema = yup.object().shape({
 });
 
 const UsersTable: FC<UsersTableProps> = ({ users }) => {
+  const dispatch = useDispatch();
+
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -55,7 +59,25 @@ const UsersTable: FC<UsersTableProps> = ({ users }) => {
   }, [users]);
 
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 90 },
+    // { field: "id", headerName: "ID", width: 90, editable: false },
+    {
+      field: "image",
+      headerName: "Image",
+      sortable: false,
+      width: 100,
+      editable: false,
+      renderCell: (params) => {
+        const imageUrl = params.row.picture;
+        console.log("imageUrl", imageUrl);
+        return (
+          <img
+            src={imageUrl}
+            alt=""
+            style={{ width: "50px", height: "50px", borderRadius: "50%" }}
+          />
+        );
+      },
+    },
     { field: "title", headerName: "Title", width: 120, editable: true },
     { field: "first", headerName: "First Name", width: 120, editable: true },
     { field: "last", headerName: "Last Name", width: 120, editable: true },
@@ -74,6 +96,25 @@ const UsersTable: FC<UsersTableProps> = ({ users }) => {
       type: "number",
       width: 130,
       editable: true,
+    },
+    {
+      field: "delete",
+      headerName: "",
+      sortable: false,
+      width: 100,
+      renderCell: (params) => {
+        const onClick = (event: React.MouseEvent) => {
+          event.stopPropagation();
+          const idToDelete = params.id;
+          const confirmDelete = window.confirm(
+            "Are you sure you want to delete this user?"
+          );
+          if (confirmDelete) {
+            dispatch(deleteUser(idToDelete));
+          }
+        };
+        return <Button onClick={onClick}>Delete</Button>;
+      },
     },
   ];
 
