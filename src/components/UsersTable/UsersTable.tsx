@@ -51,15 +51,7 @@ const UsersTable: FC<UsersTableProps> = ({ users }) => {
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedUserId, setSelectedUserId] = useState("");
 
-  console.log("selectedField", selectedField);
-  console.log("selectedValue", selectedValue);
-
-  useEffect(() => {
-    console.log("users prop changed:", users);
-  }, [users]);
-
   const columns: GridColDef[] = [
-    // { field: "id", headerName: "ID", width: 90, editable: false },
     {
       field: "image",
       headerName: "Image",
@@ -68,7 +60,7 @@ const UsersTable: FC<UsersTableProps> = ({ users }) => {
       editable: false,
       renderCell: (params) => {
         const imageUrl = params.row.picture;
-        console.log("imageUrl", imageUrl);
+
         return (
           <img
             src={imageUrl}

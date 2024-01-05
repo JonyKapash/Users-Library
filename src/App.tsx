@@ -13,9 +13,7 @@ function App() {
   useEffect(() => {
     const fetchAndLogUsers = async () => {
       if (users.length === 0) {
-        const response = await dispatch(fetchUsers() as any);
-        const { payload } = response;
-        console.log("payload", payload);
+        await dispatch(fetchUsers() as any);
       }
     };
 
