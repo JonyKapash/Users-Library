@@ -1,29 +1,37 @@
 import { FC } from "react";
-import * as yup from "yup";
 import { useFormik } from "formik";
+import { v4 as uuidv4 } from "uuid";
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import { ButtonContainer, StyledBox } from "./AddUserModal.styles";
+import { useDispatch } from "react-redux";
+import { addUser } from "../../../store/slices/users";
+import { addUserValidationSchema } from "./schema";
 
 interface AddUserModalProps {
   open: boolean;
   handleClose: () => void;
 }
 
-const addUserValidationSchema = yup.object().shape({
-  name: yup.string().min(3).required(),
-  email: yup.string().email().required(),
-});
-
 const AddUserModal: FC<AddUserModalProps> = ({ open, handleClose }) => {
+  const dispatch = useDispatch();
+
   const formik = useFormik({
     initialValues: {
+      title: "",
+      first: "",
+      last: "",
       email: "",
-      name: "",
+      country: "",
+      city: "",
+      streetName: "",
+      streetNumber: "",
     },
     validationSchema: addUserValidationSchema,
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      const userWithId = { ...values, id: uuidv4() };
+      dispatch(addUser(userWithId));
       formik.resetForm();
+      handleClose();
     },
   });
 
@@ -41,18 +49,43 @@ const AddUserModal: FC<AddUserModalProps> = ({ open, handleClose }) => {
           </Typography>
           <form onSubmit={formik.handleSubmit}>
             <TextField
-              sx={{ mb: 2 }}
+              sx={{ mb: 1 }}
               fullWidth
-              id="name"
-              name="name"
-              label="Name"
-              value={formik.values.name}
+              id="title"
+              name="title"
+              label="Title"
+              value={formik.values.title}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.name && Boolean(formik.errors.name)}
-              helperText={formik.touched.name && formik.errors.name}
+              error={formik.touched.title && Boolean(formik.errors.title)}
+              helperText={formik.touched.title && formik.errors.title}
             />
             <TextField
+              sx={{ mb: 1 }}
+              fullWidth
+              id="first"
+              name="first"
+              label="Name"
+              value={formik.values.first}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.first && Boolean(formik.errors.first)}
+              helperText={formik.touched.first && formik.errors.first}
+            />
+            <TextField
+              sx={{ mb: 1 }}
+              fullWidth
+              id="last"
+              name="last"
+              label="Last Name"
+              value={formik.values.last}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.last && Boolean(formik.errors.last)}
+              helperText={formik.touched.last && formik.errors.last}
+            />
+            <TextField
+              sx={{ mb: 1 }}
               fullWidth
               id="email"
               name="email"
@@ -62,6 +95,61 @@ const AddUserModal: FC<AddUserModalProps> = ({ open, handleClose }) => {
               onBlur={formik.handleBlur}
               error={formik.touched.email && Boolean(formik.errors.email)}
               helperText={formik.touched.email && formik.errors.email}
+            />
+            <TextField
+              sx={{ mb: 1 }}
+              fullWidth
+              id="country"
+              name="country"
+              label="Country"
+              value={formik.values.country}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.country && Boolean(formik.errors.country)}
+              helperText={formik.touched.country && formik.errors.country}
+            />
+            <TextField
+              sx={{ mb: 1 }}
+              fullWidth
+              id="city"
+              name="city"
+              label="City"
+              value={formik.values.city}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.city && Boolean(formik.errors.city)}
+              helperText={formik.touched.city && formik.errors.city}
+            />
+            <TextField
+              sx={{ mb: 1 }}
+              fullWidth
+              id="streetName"
+              name="streetName"
+              label="Street Name"
+              value={formik.values.streetName}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.streetName && Boolean(formik.errors.streetName)
+              }
+              helperText={formik.touched.streetName && formik.errors.streetName}
+            />
+            <TextField
+              sx={{ mb: 1 }}
+              fullWidth
+              id="streetNumber"
+              name="streetNumber"
+              label="Street Number"
+              value={formik.values.streetNumber}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.streetNumber &&
+                Boolean(formik.errors.streetNumber)
+              }
+              helperText={
+                formik.touched.streetNumber && formik.errors.streetNumber
+              }
             />
             <ButtonContainer>
               <Button variant="contained" type="submit">

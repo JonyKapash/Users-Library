@@ -1,12 +1,7 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import * as yup from "yup";
 import { Box, Button } from "@mui/material";
-import {
-  DataGrid,
-  GridCellParams,
-  GridColDef,
-  GridValueGetterParams,
-} from "@mui/x-data-grid";
+import { DataGrid, GridCellParams, GridColDef } from "@mui/x-data-grid";
 import AddUserModal from "../Modals/AddUserModal/AddUserModal";
 import { User } from "../../utils/types";
 import { useFormik } from "formik";
@@ -46,85 +41,45 @@ const UsersTable: FC<UsersTableProps> = ({ users }) => {
     },
   });
 
-  // const [open, setOpen] = useState(false);
-
   const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [selectedField, setSelectedField] = useState("");
   const [selectedValue, setSelectedValue] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState("");
 
   console.log("selectedField", selectedField);
   console.log("selectedValue", selectedValue);
 
+  useEffect(() => {
+    console.log("users prop changed:", users);
+  }, [users]);
+
   const columns: GridColDef[] = [
-    // { field: "id", headerName: "ID", width: 90 },
+    { field: "id", headerName: "ID", width: 90 },
+    { field: "title", headerName: "Title", width: 120, editable: true },
+    { field: "first", headerName: "First Name", width: 120, editable: true },
+    { field: "last", headerName: "Last Name", width: 120, editable: true },
+    { field: "email", headerName: "Email", width: 220, editable: true },
+    { field: "country", headerName: "Country", width: 120, editable: true },
+    { field: "city", headerName: "City", width: 120, editable: true },
     {
-      field: "title",
-      headerName: "Title",
+      field: "streetName",
+      headerName: "Street Name",
       width: 120,
       editable: true,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.name ? params.row.name.title : "",
     },
     {
-      field: "first",
-      headerName: "Name",
-      width: 120,
-      editable: true,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.name ? params.row.name.first : "",
-    },
-    {
-      field: "last",
-      headerName: "Last Name",
-      width: 120,
-      editable: true,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.name ? params.row.name.last : "",
-    },
-    {
-      field: "email",
-      headerName: "Email",
-      width: 220,
-      editable: true,
-    },
-    {
-      field: "location_country",
-      headerName: "Country",
-      width: 120,
-      editable: true,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.location ? params.row.location.country : "",
-    },
-    {
-      field: "location_city",
-      headerName: "City",
-      width: 120,
-      editable: true,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.location ? params.row.location.city : "",
-    },
-    {
-      field: "location_street_name",
-      headerName: "Street",
-      width: 120,
-      editable: true,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.location?.street ? params.row.location.street.name : "",
-    },
-    {
-      field: "location_street_number",
+      field: "streetNumber",
       headerName: "Street Number",
       type: "number",
       width: 130,
       editable: true,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.location?.street ? params.row.location.street.number : null,
     },
   ];
 
   const toggleEditUserModal = (params?: GridCellParams) => {
     if (params) {
+      setSelectedUserId(params.id as string);
       setSelectedField(params.field);
       setSelectedValue(params.value as string);
     }
@@ -162,6 +117,7 @@ const UsersTable: FC<UsersTableProps> = ({ users }) => {
       <EditUserModal
         open={isEditUserModalOpen}
         handleClose={toggleEditUserModal}
+        selectedUserId={selectedUserId}
         selectedField={selectedField}
         selectedValue={selectedValue}
       />

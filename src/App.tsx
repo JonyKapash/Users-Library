@@ -3,19 +3,24 @@ import { useDispatch, useSelector } from "react-redux";
 import "./App.css";
 import { fetchUsers } from "./store/thunks/users";
 import UsersTable from "./components/UsersTable/UsersTable";
+import { RootState } from "./store/store";
 
 function App() {
   const dispatch = useDispatch();
-  const users = useSelector((state: any) => state.users.users);
+
+  const users = useSelector((state: RootState) => state.users.users);
 
   useEffect(() => {
     const fetchAndLogUsers = async () => {
-      const response = await dispatch(fetchUsers() as any);
-      const { payload } = response;
+      if (users.length === 0) {
+        const response = await dispatch(fetchUsers() as any);
+        const { payload } = response;
+        console.log("payload", payload);
+      }
     };
 
     fetchAndLogUsers();
-  }, [dispatch]);
+  }, [dispatch, users]);
 
   return (
     <>

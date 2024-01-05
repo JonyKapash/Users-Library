@@ -7,14 +7,15 @@ export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
     const data = await response.json();
 
     const users: User[] = data.results.map((user: any) => ({
-      name: user.name,
+      title: user.name.title,
+      first: user.name.first,
+      last: user.name.last,
       email: user.email,
       picture: user.picture.medium,
-      location: {
-        country: user.location.country,
-        city: user.location.city,
-        street: user.location.street,
-      },
+      country: user.location.country,
+      city: user.location.city,
+      streetName: user.location.street.name,
+      streetNumber: user.location.street.number,
       id: user.login.uuid,
     }));
 

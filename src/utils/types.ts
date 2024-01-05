@@ -5,20 +5,14 @@ export interface UsersStore {
 }
 
 export interface User {
-  name: {
-    title: string;
-    first: string;
-    last: string;
-  };
+  title: string;
+  first: string;
+  last: string;
   email: string;
   picture: string;
-  location: {
-    street: {
-      number: number;
-      name: string;
-    };
-    city: string;
-    country: string;
-  };
+  country: string;
+  city: string;
+  streetName: string;
+  streetNumber: number;
   id: string;
 }

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchUsers } from "../thunks/users";
-import { UsersStore } from "../../utils/types";
+import { User, UsersStore } from "../../utils/types";
 
 const initialState: UsersStore = {
   users: [],
@@ -11,7 +11,20 @@ const initialState: UsersStore = {
 const usersSlice = createSlice({
   name: "users",
   initialState,
-  reducers: {},
+  reducers: {
+    updateUser: (state, action) => {
+      const { id, field, value } = action.payload;
+      return {
+        ...state,
+        users: state.users.map((user: User) =>
+          user.id === id ? { ...user, [field]: value } : user
+        ),
+      };
+    },
+    addUser: (state, action) => {
+      state.users.push(action.payload);
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchUsers.pending, (state) => {
@@ -27,5 +40,7 @@ const usersSlice = createSlice({
       });
   },
 });
+
+export const { updateUser, addUser } = usersSlice.actions;
 
 export const { actions, reducer } = usersSlice;

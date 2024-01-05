@@ -3,31 +3,27 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import { ButtonContainer, StyledBox } from "./EditUserModal.styles";
+import { useDispatch } from "react-redux";
+import { updateUser } from "../../../store/slices/users";
+import { editUserValidationSchema } from "./schema";
 
 interface EditUserModalProps {
   open: boolean;
+  selectedUserId: string;
   selectedField: string;
   selectedValue: string;
   handleClose: () => void;
 }
 
-const editUserValidationSchema = yup.object().shape({
-  title: yup.string().min(3).required(),
-  first: yup.string().min(3).required(),
-  last: yup.string().min(3).required(),
-  email: yup.string().email().required(),
-  location_country: yup.string().min(3).required(),
-  location_city: yup.string().min(3).required(),
-  location_street_name: yup.string().min(3).required(),
-  location_street_number: yup.number().min(1).required(),
-});
-
 const EditUserModal: FC<EditUserModalProps> = ({
   open,
+  selectedUserId,
   selectedField,
   selectedValue,
   handleClose,
 }) => {
+  const dispatch = useDispatch();
+
   const formik = useFormik({
     initialValues: {
       [selectedField]: selectedValue || "",
@@ -39,7 +35,14 @@ const EditUserModal: FC<EditUserModalProps> = ({
         ],
     }),
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      dispatch(
+        updateUser({
+          id: selectedUserId,
+          field: selectedField,
+          value: values[selectedField],
+        })
+      );
+      handleClose();
       formik.resetForm();
     },
   });
